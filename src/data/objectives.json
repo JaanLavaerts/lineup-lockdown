@@ -1,0 +1,20 @@
+[
+  {
+    "id": "1",
+    "description": "Build a team with an average FT% of 80% or higher",
+    "target": 80,
+    "stat": "ft_pct",
+    "type": "AVG",
+    "difficulty": "EASY",
+    "suffix": "FT%"
+  },
+  {
+    "id": "2",
+    "description": "Build a team with an average FG% of 50% or higher",
+    "target": 50,
+    "stat": "fg_pct",
+    "type": "TOT",
+    "difficulty": "HARD",
+    "suffix": "FG%"
+  }
+]
