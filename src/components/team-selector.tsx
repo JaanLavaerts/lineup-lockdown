@@ -17,7 +17,6 @@ export default function TeamSelector() {
       state.setTeam(selectedTeam);
       setTeam(selectedTeam);
     };
-
     getRandomLogo();
   }, []);
 
