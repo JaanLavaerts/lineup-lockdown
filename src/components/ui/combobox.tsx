@@ -6,10 +6,15 @@ import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { PlayerSimpleInfo, Team } from '../../lib/types';
+import { PlayerSimpleInfo } from '../../lib/types';
 import store from '../../store/store';
 
-export function Combobox() {
+export function Combobox(props: {
+  pos: string;
+  selectedPlayers: PlayerSimpleInfo[];
+  onPlayerSelect: (player: PlayerSimpleInfo) => void;
+  onPlayerDeselect: (player: PlayerSimpleInfo) => void;
+}) {
   const [open, setOpen] = useState<boolean>(false);
   const [value, setValue] = useState<string>('');
   const [players, setPlayers] = useState<PlayerSimpleInfo[]>([]);
@@ -42,12 +47,33 @@ export function Combobox() {
     setValue(inputValue);
     if (inputValue) {
       const filtered = players.filter(
-        (player) => player.fullName.toLowerCase().includes(inputValue.toLowerCase()) && player.teams.includes(teamAbbr)
+        (player) =>
+          player.fullName.toLowerCase().includes(inputValue.toLowerCase()) &&
+          player.teams.includes(teamAbbr) &&
+          player.positions.includes(props.pos) &&
+          !props.selectedPlayers.some((p) => p.id === player.id)
       );
-      setFilteredPlayers(filtered.slice(0, 3)); // Show only the first 3 items
+      setFilteredPlayers(filtered.slice(0, 3));
     } else {
+      const deselectPlayer = players.find((player) => player.fullName === value);
+      if (deselectPlayer) props.onPlayerDeselect(deselectPlayer); // Deselect the player when input is cleared
       setFilteredPlayers([]);
     }
+  };
+
+  const handlePlayerSelect = (player: PlayerSimpleInfo) => {
+    if (player.fullName === value) {
+      setValue('');
+      props.onPlayerDeselect(player);
+    } else {
+      if (value) {
+        const previousPlayer = players.find((p) => p.fullName === value);
+        if (previousPlayer) props.onPlayerDeselect(previousPlayer); // Deselect the previous player
+      }
+      setValue(player.fullName);
+      props.onPlayerSelect(player);
+    }
+    setOpen(false);
   };
 
   return (
@@ -66,14 +92,7 @@ export function Combobox() {
               <CommandEmpty>No players found.</CommandEmpty>
               <CommandGroup>
                 {filteredPlayers.map((player) => (
-                  <CommandItem
-                    key={player.id}
-                    value={player.fullName}
-                    onSelect={(currentValue) => {
-                      setValue(currentValue === value ? '' : currentValue);
-                      setOpen(false);
-                    }}
-                  >
+                  <CommandItem key={player.id} value={player.fullName} onSelect={() => handlePlayerSelect(player)}>
                     {player.fullName}
                     <CheckIcon
                       className={cn('ml-auto h-4 w-4', value === player.fullName ? 'opacity-100' : 'opacity-0')}

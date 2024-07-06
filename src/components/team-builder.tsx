@@ -8,8 +8,20 @@ import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Combobox } from './ui/combobox';
+import { useState } from 'react';
+import { PlayerSimpleInfo } from '@/lib/types';
 
 export default function TeamBuilder() {
+  const [selectedPlayers, setSelectedPlayers] = useState<PlayerSimpleInfo[]>([]);
+
+  const handlePlayerSelect = (player: PlayerSimpleInfo) => {
+    setSelectedPlayers((prevSelectedPlayers) => [...prevSelectedPlayers, player]);
+  };
+
+  const handlePlayerDeselect = (player: PlayerSimpleInfo) => {
+    setSelectedPlayers((prevSelectedPlayers) => prevSelectedPlayers.filter((p) => p.id !== player.id));
+  };
+
   const form = useForm({
     defaultValues: {
       pointGuard: '',
@@ -21,11 +33,11 @@ export default function TeamBuilder() {
   });
 
   const formFields = {
-    pointGuard: 'Point Guard',
-    shootingGuard: 'Shooting Guard',
-    smallForward: 'Small Forward',
-    powerForward: 'Power Forward',
-    center: 'Center',
+    pointGuard: ['Point Guard', 'Guard'],
+    shootingGuard: ['Shooting Guard', 'Guard'],
+    smallForward: ['Small Forward', 'Forward'],
+    powerForward: ['Power Forward', 'Forward'],
+    center: ['Center', 'Center'],
   };
 
   function onSubmit(data: any) {
@@ -38,10 +50,15 @@ export default function TeamBuilder() {
         <form onSubmit={form.handleSubmit(onSubmit)}>
           {Object.entries(formFields).map(([key, value]) => (
             <FormItem key={key} className="space-y-0">
-              <FormLabel htmlFor={key}>{value}</FormLabel>
+              <FormLabel htmlFor={key}>{value[0]}</FormLabel>
               <div className="flex gap-2">
                 <FormControl>
-                  <Combobox />
+                  <Combobox
+                    pos={value[1]}
+                    selectedPlayers={selectedPlayers}
+                    onPlayerSelect={handlePlayerSelect}
+                    onPlayerDeselect={handlePlayerDeselect}
+                  />
                 </FormControl>
                 <Button type="button" variant="outline" className="border-primary">
                   <LockClosedIcon className="text-primary" />

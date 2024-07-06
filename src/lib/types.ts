@@ -105,11 +105,21 @@ export interface PlayerSimpleInfo {
   id: number;
   fullName: string;
   teams: string[];
+  positions: string[];
 }
+
 export interface Team {
   logo?: ReactNbaLogos.Icon;
   abbreviation?: string;
   name?: string;
+}
+
+export interface Lineup {
+  pointGuard: PlayerSimpleInfo | null;
+  shootingGuard: PlayerSimpleInfo | null;
+  smallForward: PlayerSimpleInfo | null;
+  powerForward: PlayerSimpleInfo | null;
+  center: PlayerSimpleInfo | null;
 }
 
 export interface TeamStore extends Team {

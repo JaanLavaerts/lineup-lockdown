@@ -1,8 +1,16 @@
 import json
 
 # Read the input JSON file
-with open('players.json', 'r') as f:
+with open('../src/data/players.json', 'r') as f:
     data = json.load(f)
+
+def get_positions(string):
+    positions = []
+    if '-' in string:
+        positions = string.split('-')
+    else:
+        positions = [string]
+    return list(set(positions))
 
 # Function to extract required fields
 def extract_required_fields(data):
@@ -12,6 +20,7 @@ def extract_required_fields(data):
         extracted_entry = {
             "id": player_info.get("PERSON_ID"),
             "fullName": player_info.get("DISPLAY_FIRST_LAST"),
+            "positions": get_positions(player_info.get("POSITION")),
             "teams": player_info.get("TEAMS", [])
         }
         extracted_data.append(extracted_entry)
@@ -21,7 +30,7 @@ def extract_required_fields(data):
 extracted_data = extract_required_fields(data)
 
 # Write the extracted data to a new JSON file
-with open('extracted_players.json', 'w') as f:
+with open('../src/data/player-names.json', 'w') as f:
     json.dump(extracted_data, f, indent=4)
 
 # Print the extracted data for verification
